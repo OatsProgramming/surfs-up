@@ -16,6 +16,12 @@ a {
   text-decoration: none;
 }
 
+.easeTransition {
+  -webkit-transition: all 200ms ease;
+  -o-transition: all 200ms ease;
+  transition: all 200ms ease;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

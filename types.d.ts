@@ -10,6 +10,12 @@ type User = Record<UserProp, | string> & {
 
 type UserPartial = Partial<User>
 
+type NewInfo = User & {
+    newEmail: Email,
+    newUsername: string,
+    newPassword: string,
+}
+
 type TextFieldProp = {
     onChange: (args: UserPartial) => void,
     value: User,

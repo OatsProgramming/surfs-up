@@ -5,6 +5,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { compare } from 'bcrypt'
 import Google from 'next-auth/providers/google'
 import Github from 'next-auth/providers/github'
+import NextAuth from 'next-auth/next'
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prismadb),
@@ -12,6 +13,14 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt'
     },
     providers: [
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+        }),
+        Github({
+            clientId: process.env.GITHUB_CLIENT_ID!,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET!
+        }),
         Credentials({
             // form
             name: 'Sign In',
@@ -49,16 +58,11 @@ export const authOptions: NextAuthOptions = {
                 return user
             }
         }),
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
-        }),
-        Github({
-            clientId: process.env.GITHUB_CLIENT_ID!,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET!
-        })
     ],
     pages: {
         signIn: '/',
     }
 }
+
+const handler = NextAuth(authOptions)
+export { handler as GET, handler as POST }

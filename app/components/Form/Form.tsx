@@ -1,10 +1,13 @@
+'use client'
+
 import { useState } from "react";
 import TextField from "./TextField/TextField";
 import styles from './form.module.css'
 import ToastContainer from '@/lib/toasts/ToastContainer'
 import userFetcher from "@/lib/fetchers/userFetcher";
+import { signIn, signOut } from 'next-auth/react'
 
-export default function Form({ method } : {
+export default function Form({ method }: {
     method: UserHTTP
 }) {
     const [user, setUser] = useState({} as User)
@@ -27,16 +30,26 @@ export default function Form({ method } : {
 
     return (
         <>
-            <form className={styles['container']} onSubmit={(e) => userFetcher(e, method, user, newInfo)}>
-                {method === 'POST' && (
+            <form className={styles['container']} onSubmit={(e) => {
+                if (method === 'GET') {
+                    e.preventDefault()
+                    signIn('credentials', user)
+                        .then(res => console.log(res))
+                        .catch(err => console.log(err))
+                }
+                else {
+                    userFetcher(e, method, user, newInfo)
+                }
+            }}>
+                {(method === 'POST' || method === 'GET') && (
                     <TextField
-                    onChange={handleChange}
-                    value={user}
-                    label={'Username'}
-                    id={'username'}
-                    type={'text'}
-                    required
-                />
+                        onChange={handleChange}
+                        value={user}
+                        label={'Username'}
+                        id={'username'}
+                        type={'text'}
+                        required
+                    />
                 )}
                 <TextField
                     onChange={handleChange}
@@ -81,12 +94,16 @@ export default function Form({ method } : {
                 )}
                 <button>
                     {
-                    method === 'POST' ? 'Create User' : 
-                    method === 'PATCH' ? 'Update User' : 
-                    'Delete User'
+                        method === 'GET' ? 'Sign In' :
+                        method === 'POST' ? 'Create User' :
+                        method === 'PATCH' ? 'Update User' :
+                        'Delete User'
                     }
                 </button>
             </form>
+            <button onPointerDown={() => signOut()}>
+                Sign out
+            </button>
             <ToastContainer
                 position="bottom-center"
                 autoClose={5000}

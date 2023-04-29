@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GITHUB_CLIENT_SECRET!
         }),
         Credentials({
-            // form
+            // form ( used as default )
             name: 'Sign In',
             // form elements
             credentials: {
@@ -43,12 +43,17 @@ export const authOptions: NextAuthOptions = {
             },
             authorize: async (credentials) => {
                 // When signing in, check for any missing inputs
-
-                if (!(credentials?.email && credentials.username) || credentials.password) return null
+                if (!(credentials?.email && credentials.username) || !credentials.password) return null
 
                 // Check db to see info exists and pw matches
-                const user = await prismadb.user.findUnique({
-                    where: { email: credentials.email }
+                const user = await prismadb.user.findFirst({
+                    where: { 
+                        OR: [{
+                            email: credentials.email
+                        }, {
+                            username: credentials.username
+                        }]
+                     }
                 })
 
                 // Type narrowing
@@ -59,8 +64,30 @@ export const authOptions: NextAuthOptions = {
             }
         }),
     ],
+    // Used if want to have customized auth pages (e.g signIn page)
     pages: {
         signIn: '/',
+    },
+    debug: process.env.NODE_ENV === 'development',
+    callbacks: {
+        jwt: ({ token, user }) => {
+            if (user) {
+                return {
+                    ...token, 
+                    id: user.id
+                }
+            }
+            return token
+        },
+        session: ({ session, token }) => {
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    id: token.id
+                }
+            }
+        }
     }
 }
 

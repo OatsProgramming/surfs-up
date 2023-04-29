@@ -1,15 +1,20 @@
-'use client'
-
 import { Inter } from 'next/font/google'
 import Form from './components/Form/Form'
+import { getServerSession } from 'next-auth'
+import { authOptions } from './api/auth/[...nextauth]/route'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
-  
+export default async function Home() {
+  const session = await getServerSession(authOptions)
+  if (!session) console.log('closed')
+
   return (
     <main>
-      <Form />
+      <Form method='GET'/>
+      <div>
+        <pre>{JSON.stringify(session)}</pre>
+      </div>
     </main>
   )
 }

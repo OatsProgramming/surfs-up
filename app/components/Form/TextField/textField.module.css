@@ -19,3 +19,8 @@
     top: -1rem;
     left: 0.8rem;
 }
+
+.container > input.error + label {
+    color: red;
+    background-color: red;
+}

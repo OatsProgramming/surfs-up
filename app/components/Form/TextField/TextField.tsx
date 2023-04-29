@@ -1,6 +1,6 @@
 import styles from './textField.module.css'
 
-export default function TextField({ id, onChange, value, label, type } : TextFieldProp) {
+export default function TextField({ id, onChange, value, label, type, required } : TextFieldProp) {
 
     return (
         <div className={styles['container']}>
@@ -12,6 +12,7 @@ export default function TextField({ id, onChange, value, label, type } : TextFie
                     [id] : e.target.value
                 })}
                 placeholder=" "
+                required={required}
             />
             <label 
                 htmlFor={id}

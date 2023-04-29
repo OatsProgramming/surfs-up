@@ -22,4 +22,9 @@ type TextFieldProp = {
     label: string,
     id: UserProp,
     type: 'text' | 'password',
+    required?: boolean
 }
+
+type UserHTTP = 'POST' | 'DELETE' | 'PATCH'
+
+type ToastNotif = 'success' | 'warn' | 'error' | 'info'

@@ -28,3 +28,5 @@ type TextFieldProp = {
 type UserHTTP = 'POST' | 'DELETE' | 'PATCH' | 'GET'
 
 type ToastNotif = 'success' | 'warn' | 'error' | 'info'
+
+type Providers = Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null

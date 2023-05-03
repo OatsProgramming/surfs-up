@@ -3,8 +3,8 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prismadb from '@/lib/prismadb'
 import Credentials from 'next-auth/providers/credentials'
 import { compare } from 'bcrypt'
-import Google from 'next-auth/providers/google'
-import Github from 'next-auth/providers/github'
+// import Google from 'next-auth/providers/google'
+// import Github from 'next-auth/providers/github'
 import NextAuth from 'next-auth/next'
 
 export const authOptions: NextAuthOptions = {
@@ -13,14 +13,15 @@ export const authOptions: NextAuthOptions = {
         strategy: 'jwt'
     },
     providers: [
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
-        }),
-        Github({
-            clientId: process.env.GITHUB_CLIENT_ID!,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET!
-        }),
+        // Other providers not supported yet apparently with Route Handlers
+        // Google({
+        //     clientId: process.env.GOOGLE_CLIENT_ID!,
+        //     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        // }),
+        // Github({
+        //     clientId: process.env.GITHUB_CLIENT_ID!,
+        //     clientSecret: process.env.GITHUB_CLIENT_SECRET!
+        // }),
         Credentials({
             // form ( used as default )
             name: 'Sign In',
@@ -42,6 +43,7 @@ export const authOptions: NextAuthOptions = {
                 }
             },
             authorize: async (credentials) => {
+                console.log(credentials)
                 // When signing in, check for any missing inputs
                 if (!(credentials?.email && credentials.username) || !credentials.password) return null
 

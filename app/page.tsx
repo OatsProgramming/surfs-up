@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
     <main>
-      <Form method='GET'/>
+      <Form method='DELETE'/>
       <div>
         <pre>{JSON.stringify(session)}</pre>
       </div>

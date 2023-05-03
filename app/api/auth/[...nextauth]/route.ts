@@ -43,26 +43,31 @@ export const authOptions: NextAuthOptions = {
                 }
             },
             authorize: async (credentials) => {
-                console.log(credentials)
                 // When signing in, check for any missing inputs
                 if (!(credentials?.email && credentials.username) || !credentials.password) return null
 
-                // Check db to see info exists and pw matches
-                const user = await prismadb.user.findFirst({
-                    where: { 
-                        OR: [{
-                            email: credentials.email
-                        }, {
-                            username: credentials.username
-                        }]
-                     }
-                })
+                try {
+                    // Check db to see info exists and pw matches
+                    const user = await prismadb.user.findFirst({
+                        where: { 
+                            OR: [{
+                                email: credentials.email
+                            }, {
+                                username: credentials.username
+                            }]
+                         }
+                    })
 
-                // Type narrowing
-                if (!user) return null
-                else if (!await compare(credentials.password, user.hashedPassword)) return null
+                    // Type narrowing
+                    if (!user) return null
+                    else if (!await compare(credentials.password, user.hashedPassword)) return null
 
-                return user
+                    return user
+
+                } catch (error) {
+                    console.error(error)
+                    return null
+                }
             }
         }),
     ],

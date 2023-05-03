@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import TextField from "./TextField/TextField";
 import styles from './form.module.css'
 import ToastContainer from '@/lib/toasts/ToastContainer'
@@ -8,11 +8,11 @@ import userFetcher from "@/lib/fetchers/userFetcher";
 import { signIn, signOut } from 'next-auth/react'
 
 export default function Form({ method }: {
-    method: UserHTTP
+    method: HTTP
 }) {
     const [user, setUser] = useState({} as User)
     const [newInfo, setNewInfo] = useState({} as User)
-
+       
     function handleChange(mutateUser: UserPartial) {
         setUser({
             ...user,
@@ -28,19 +28,28 @@ export default function Form({ method }: {
         })
     }
 
+    function handleSubmit(e: FormEvent) {
+        e.preventDefault()
+
+        if (method !== 'DELETE') {
+            // Check to see if user is "writing" data
+            if (method !== 'GET') userFetcher(method, user, newInfo)
+
+            signIn('credentials', user)
+                .then(res => console.log(res))
+                .catch(err => console.log(err))
+        } else {
+            // Delete user data
+            signOut()
+                .catch(err => console.log(err))
+
+            userFetcher(method, user)
+        }
+    }
+
     return (
         <>
-            <form className={styles['container']} onSubmit={(e) => {
-                if (method === 'GET') {
-                    e.preventDefault()
-                    signIn('credentials', user)
-                        .then(res => console.log(res))
-                        .catch(err => console.log(err))
-                }
-                else {
-                    userFetcher(e, method, user, newInfo)
-                }
-            }}>
+            <form className={styles['container']} onSubmit={handleSubmit}>
                 {(method === 'POST' || method === 'GET') && (
                     <TextField
                         onChange={handleChange}

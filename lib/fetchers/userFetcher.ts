@@ -1,22 +1,20 @@
 import isEmail from "@/lib/isEmail";
-import { FormEvent } from "react";
 import notify from "../toasts/notify";
 
-export default async function userFetcher(e: FormEvent, method: UserHTTP, data: User | NewInfo, patchData?: User) {
-    e.preventDefault()
-
+export default async function userFetcher(method: HTTP, data: User | NewInfo, patchData?: User) {
     // Check for email validity
     if (!isEmail(data.email)) {
         return notify("Please enter a valid email", 'warn')
     }
 
     // For PATCH
+    // Check to have at least one parameter to change
     if ((patchData?.email || patchData?.password || patchData?.username) && method === 'PATCH') {
-        // Ditto here if updating with new email
+        // Check for email validity if existent
         if (patchData.email && !isEmail(patchData.email)) {
             return notify("Please enter a valid email if updating the current one", 'warn')
         }
-        // combine if method is PATCH and have at least one parameter to change
+
         data = {
             ...data,
             newEmail: patchData.email,

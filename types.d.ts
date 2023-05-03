@@ -25,7 +25,7 @@ type TextFieldProp = {
     required?: boolean
 }
 
-type UserHTTP = 'POST' | 'DELETE' | 'PATCH' | 'GET'
+type HTTP = 'POST' | 'DELETE' | 'PATCH' | 'GET'
 
 type ToastNotif = 'success' | 'warn' | 'error' | 'info'
 

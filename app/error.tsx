@@ -13,11 +13,11 @@ export default function Error({
   error: Error;
   reset: () => void;
 }) {
+  const router = useRouter()
+  
   useEffect(() => {
     console.error(error);
   }, [error]);
-
-  const router = useRouter()
 
   function handleClick() {
     signOut()

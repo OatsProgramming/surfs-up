@@ -6,6 +6,7 @@ import styles from './form.module.css'
 import ToastContainer from '@/lib/toasts/ToastContainer'
 import userFetcher from "@/lib/fetchers/userFetcher";
 import { signIn, signOut } from 'next-auth/react'
+import notify from "@/lib/toasts/notify";
 
 export default function Form({ method }: {
     method: HTTP
@@ -28,22 +29,25 @@ export default function Form({ method }: {
         })
     }
 
-    function handleSubmit(e: FormEvent) {
+    async function handleSubmit(e: FormEvent) {
         e.preventDefault()
 
-        if (method !== 'DELETE') {
-            // Check to see if user is "writing" data
-            if (method !== 'GET') userFetcher(method, user, newInfo)
-
-            signIn('credentials', user)
-                .then(res => console.log(res))
-                .catch(err => console.log(err))
-        } else {
-            // Delete user data
-            signOut()
-                .catch(err => console.log(err))
-
-            userFetcher(method, user)
+        try {
+            if (method !== 'DELETE') {
+                // Check to see if user is "writing" data
+                if (method !== 'GET') await userFetcher(method, user, newInfo)
+                const result = await signIn('credentials', {
+                    ...user,
+                    callbackUrl: '/content'
+                })
+                if (!result) notify("Invalid log in. Please try again.", 'error')
+            } else {
+                // Delete user data
+                signOut()
+                userFetcher(method, user)
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 
@@ -110,7 +114,7 @@ export default function Form({ method }: {
                     }
                 </button>
             </form>
-            <button onPointerDown={() => signOut()}>
+            <button onClick={() => signOut()}>
                 Sign out
             </button>
             <ToastContainer
